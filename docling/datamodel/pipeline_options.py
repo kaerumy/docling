@@ -37,6 +37,7 @@ from docling.datamodel.pipeline_options_vlm_model import (
 from docling.datamodel.vlm_model_specs import (
     GRANITE_VISION_OLLAMA as granite_vision_vlm_ollama_conversion_options,
     GRANITE_VISION_TRANSFORMERS as granite_vision_vlm_conversion_options,
+    QWEN25_OLLAMA as qwen25_ollama_vlm_conversion_options,
     SMOLDOCLING_MLX as smoldocling_vlm_mlx_conversion_options,
     SMOLDOCLING_TRANSFORMERS as smoldocling_vlm_conversion_options,
     VlmModelType,
@@ -218,6 +219,12 @@ smolvlm_picture_description = PictureDescriptionVlmOptions(
 # GraniteVision
 granite_picture_description = PictureDescriptionVlmOptions(
     repo_id="ibm-granite/granite-vision-3.3-2b",
+    prompt="What is shown in this image?",
+)
+
+# Qwen25-VL
+qwen25_vl_picture_description = PictureDescriptionVlmOptions(
+    repo_id="Qwen/Qwen-25-VL-3B",
     prompt="What is shown in this image?",
 )
 

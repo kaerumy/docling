@@ -35,6 +35,7 @@ class _AvailableModels(str, Enum):
     SMOLDOCLING = "smoldocling"
     SMOLDOCLING_MLX = "smoldocling_mlx"
     GRANITE_VISION = "granite_vision"
+    QWEN25_VL_3B = "qwen25"
     EASYOCR = "easyocr"
 
 
@@ -110,6 +111,7 @@ def download(
         with_smoldocling=_AvailableModels.SMOLDOCLING in to_download,
         with_smoldocling_mlx=_AvailableModels.SMOLDOCLING_MLX in to_download,
         with_granite_vision=_AvailableModels.GRANITE_VISION in to_download,
+        with_qwen25=_AvailableModels.QWEN25_VL_3B in to_download,
         with_easyocr=_AvailableModels.EASYOCR in to_download,
     )
 

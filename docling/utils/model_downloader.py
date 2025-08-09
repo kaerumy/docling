@@ -36,6 +36,7 @@ def download_models(
     with_smoldocling: bool = False,
     with_smoldocling_mlx: bool = False,
     with_granite_vision: bool = False,
+    with_qwen25: bool = False,
     with_easyocr: bool = True,
 ):
     if output_dir is None:
@@ -99,6 +100,15 @@ def download_models(
         download_hf_model(
             repo_id=SMOLDOCLING_MLX.repo_id,
             local_dir=output_dir / SMOLDOCLING_MLX.repo_cache_folder,
+            force=force,
+            progress=progress,
+        )
+
+    if with_qwen25:
+        _log.info("Downloading Qwen-25 model...")
+        download_hf_model(
+            repo_id="Qwen/Qwen-25-VL",
+            local_dir=output_dir / "Qwen-25-VL",
             force=force,
             progress=progress,
         )
