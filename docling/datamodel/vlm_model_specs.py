@@ -64,7 +64,7 @@ GRANITE_VISION_OLLAMA = ApiVlmOptions(
     params={"model": "granite3.2-vision:2b"},
     prompt="Convert this page to markdown. Do not miss any text and only output the bare markdown!",
     scale=1.0,
-    timeout=120,
+    timeout=3200,
     response_format=ResponseFormat.MARKDOWN,
     temperature=0.0,
 )
@@ -118,12 +118,12 @@ QWEN25_VL_3B_MLX = InlineVlmOptions(
 
 QWEN25_OLLAMA = ApiVlmOptions(
     url=AnyUrl("http://localhost:11434/v1/chat/completions"),
-    params={"model": "qwen2.5vl:latest"},
-    prompt="Convert this page to markdown. Do not miss any text and only output the bare markdown!",
-    scale=1.0,
-    timeout=120,
+    params={"model": "qwen2.5vl:7b"},
+    prompt="Convert this page to markdown. Do not miss any text and only the output bare markdown!",
+    scale=2.0,
+    timeout=3600,
     response_format=ResponseFormat.MARKDOWN,
-    temperature=0.0,
+    temperature=0.1,
 )
 
 
