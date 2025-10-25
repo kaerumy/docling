@@ -7,28 +7,27 @@ theme:
   name: material
   custom_dir: docs/overrides
   palette:
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme)"
-      scheme: default
+    # Default dark mode
+    - scheme: slate
       primary: black
       toggle:
-        icon: material/brightness-auto
+        icon: material/brightness-7
         name: Switch to light mode
 
-    # Palette toggle for light mode
+    # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: black
       toggle:
-        icon: material/brightness-7
+        icon: material/brightness-4
         name: Switch to dark mode
 
-    # Palette toggle for dark mode
+    # System preference (dark)
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: black
       toggle:
-        icon: material/brightness-4
+        icon: material/brightness-auto
         name: Switch to system preference
 
   logo: assets/logo.png
@@ -37,6 +36,7 @@ theme:
     - content.tabs.link
     - content.code.annotate
     - content.code.copy
+    - content.tooltips
     - announce.dismiss
     - navigation.footer
     - navigation.tabs
@@ -54,13 +54,18 @@ theme:
 nav:
   - Home:
     - "Docling": index.md
+    - Getting started:
+      - Getting started: getting_started/index.md
     - Installation:
       - Installation: installation/index.md
     - Usage:
       - Usage: usage/index.md
+      - Advanced options: usage/advanced_options.md
       - Supported formats: usage/supported_formats.md
       - Enrichment features: usage/enrichments.md
       - Vision models: usage/vision_models.md
+      - MCP server: usage/mcp.md
+      - Jobkit: usage/jobkit.md
     - FAQ:
       - FAQ: faq/index.md
   - Concepts:
@@ -78,10 +83,10 @@ nav:
       - "Custom conversion": examples/custom_convert.py
       - "Batch conversion": examples/batch_convert.py
       - "Multi-format conversion": examples/run_with_formats.py
-      - "VLM pipeline with SmolDocling": examples/minimal_vlm_pipeline.py
+      - "VLM pipeline with GraniteDocling": examples/minimal_vlm_pipeline.py
       - "VLM pipeline with remote model": examples/vlm_pipeline_api_model.py
       - "VLM comparison": examples/compare_vlm_models.py
-      - "ASR pipeline with Whisper": examples/minimal_asr_pipeline.py      
+      - "ASR pipeline with Whisper": examples/minimal_asr_pipeline.py
       - "Figure export": examples/export_figures.py
       - "Table export": examples/export_tables.py
       - "Multimodal export": examples/export_multimodal.py
@@ -89,6 +94,7 @@ nav:
       - "Automatic OCR language detection with tesseract": examples/tesseract_lang_detection.py
       - "RapidOCR with custom OCR models": examples/rapidocr_with_custom_models.py
       - "Accelerator options": examples/run_with_accelerator.py
+      - "Detect and obfuscate PII": examples/pii_obfuscate.py
       - "Simple translation": examples/translate.py
       - examples/backend_csv.ipynb
       - examples/backend_xml_rag.ipynb
@@ -96,6 +102,8 @@ nav:
       - examples/serialization.ipynb
       - examples/hybrid_chunking.ipynb
       - examples/advanced_chunking_and_serialization.ipynb
+    - 📤 Information extraction:
+      - examples/extraction.ipynb
     - 🤖 RAG with AI dev frameworks:
       - examples/rag_haystack.ipynb
       - examples/rag_langchain.ipynb
@@ -109,11 +117,15 @@ nav:
       - "Formula enrichment": examples/develop_formula_understanding.py
       - "Enrich a DoclingDocument": examples/enrich_doclingdocument.py
     - 🗂️ More examples:
-      - examples/rag_milvus.ipynb
-      - examples/rag_weaviate.ipynb
-      - RAG with Granite [↗]: https://github.com/ibm-granite-community/granite-snack-cookbook/blob/main/recipes/RAG/Granite_Docling_RAG.ipynb
+      - examples/dpk-ingest-chunk-tokenize.ipynb
       - examples/rag_azuresearch.ipynb
+      - RAG with Granite [↗]: https://github.com/ibm-granite-community/granite-snack-cookbook/blob/main/recipes/RAG/Granite_Docling_RAG.ipynb
+      - examples/rag_milvus.ipynb
+      - examples/rag_opensearch.ipynb
+      - examples/rag_weaviate.ipynb
       - examples/retrieval_qdrant.ipynb
+      - examples/rag_mongodb.ipynb
+      - RAG with Vault PII transform [↗]: https://github.com/workloads/pathfinder-prism
   - Integrations:
     - Integrations: integrations/index.md
     - 🤖 Agentic / AI dev frameworks:
@@ -121,6 +133,7 @@ nav:
       - "Crew AI": integrations/crewai.md
       - "Haystack": integrations/haystack.md
       - "LangChain": integrations/langchain.md
+      - "Langflow": integrations/langflow.md
       - "LlamaIndex": integrations/llamaindex.md
       - "txtai": integrations/txtai.md
     - ⭐️ Featured:
@@ -138,6 +151,7 @@ nav:
       - "Kotaemon": integrations/kotaemon.md
       - "OpenContracts": integrations/opencontracts.md
       - "Open WebUI": integrations/openwebui.md
+      - "Quarkus": integrations/quarkus.md
       - "Vectara": integrations/vectara.md
   - Reference:
     - Python API:
@@ -148,12 +162,16 @@ nav:
       - CLI reference: reference/cli.md
 
 markdown_extensions:
+  - pymdownx.critic
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
       slugify: !!python/object/apply:pymdownx.slugs.slugify
         kwds:
           case: lower
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - admonition
   - pymdownx.details
   - attr_list
@@ -173,3 +191,15 @@ plugins:
 
 extra_css:
   - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/docling-project/docling
+    - icon: fontawesome/brands/discord
+      link: https://docling.ai/discord
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/company/docling/
+  analytics:
+    provider: google
+    property: G-MP75NXFDH4

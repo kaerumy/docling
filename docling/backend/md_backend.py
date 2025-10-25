@@ -3,6 +3,7 @@ import re
 import warnings
 from copy import deepcopy
 from enum import Enum
+from html import unescape
 from io import BytesIO
 from pathlib import Path
 from typing import Literal, Optional, Union, cast
@@ -23,10 +24,16 @@ from docling_core.types.doc import (
 from docling_core.types.doc.document import Formatting
 from marko import Markdown
 from pydantic import AnyUrl, BaseModel, Field, TypeAdapter
-from typing_extensions import Annotated
+from typing_extensions import Annotated, override
 
-from docling.backend.abstract_backend import DeclarativeDocumentBackend
+from docling.backend.abstract_backend import (
+    DeclarativeDocumentBackend,
+)
 from docling.backend.html_backend import HTMLDocumentBackend
+from docling.datamodel.backend_options import (
+    HTMLBackendOptions,
+    MarkdownBackendOptions,
+)
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.document import InputDocument
 
@@ -87,8 +94,14 @@ class MarkdownDocumentBackend(DeclarativeDocumentBackend):
 
         return shortened_text
 
-    def __init__(self, in_doc: "InputDocument", path_or_stream: Union[BytesIO, Path]):
-        super().__init__(in_doc, path_or_stream)
+    @override
+    def __init__(
+        self,
+        in_doc: InputDocument,
+        path_or_stream: Union[BytesIO, Path],
+        options: MarkdownBackendOptions = MarkdownBackendOptions(),
+    ):
+        super().__init__(in_doc, path_or_stream, options)
 
         _log.debug("Starting MarkdownDocumentBackend...")
 
@@ -248,7 +261,10 @@ class MarkdownDocumentBackend(DeclarativeDocumentBackend):
 
         # Iterates over all elements in the AST
         # Check for different element types and process relevant details
-        if isinstance(element, marko.block.Heading) and len(element.children) > 0:
+        if (
+            isinstance(element, marko.block.Heading)
+            or isinstance(element, marko.block.SetextHeading)
+        ) and len(element.children) > 0:
             self._close_table(doc)
             _log.debug(
                 f" - Heading level {element.level}, content: {element.children[0].children}"  # type: ignore
@@ -321,9 +337,10 @@ class MarkdownDocumentBackend(DeclarativeDocumentBackend):
 
             fig_caption: Optional[TextItem] = None
             if element.title is not None and element.title != "":
+                title = unescape(element.title)
                 fig_caption = doc.add_text(
                     label=DocItemLabel.CAPTION,
-                    text=element.title,
+                    text=title,
                     formatting=formatting,
                     hyperlink=hyperlink,
                 )
@@ -351,6 +368,7 @@ class MarkdownDocumentBackend(DeclarativeDocumentBackend):
             snippet_text = (
                 element.children.strip() if isinstance(element.children, str) else ""
             )
+            snippet_text = unescape(snippet_text)
             # Detect start of the table:
             if "|" in snippet_text or self.in_table:
                 # most likely part of the markdown table
@@ -569,14 +587,24 @@ class MarkdownDocumentBackend(DeclarativeDocumentBackend):
                 self._html_blocks = 0
                 # delegate to HTML backend
                 stream = BytesIO(bytes(html_str, encoding="utf-8"))
+                md_options = cast(MarkdownBackendOptions, self.options)
+                html_options = HTMLBackendOptions(
+                    enable_local_fetch=md_options.enable_local_fetch,
+                    enable_remote_fetch=md_options.enable_remote_fetch,
+                    fetch_images=md_options.fetch_images,
+                    source_uri=md_options.source_uri,
+                )
                 in_doc = InputDocument(
                     path_or_stream=stream,
                     format=InputFormat.HTML,
                     backend=html_backend_cls,
                     filename=self.file.name,
+                    backend_options=html_options,
                 )
                 html_backend_obj = html_backend_cls(
-                    in_doc=in_doc, path_or_stream=stream
+                    in_doc=in_doc,
+                    path_or_stream=stream,
+                    options=html_options,
                 )
                 doc = html_backend_obj.convert()
         else:

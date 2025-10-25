@@ -9,6 +9,7 @@ from docling_core.types.doc.page import SegmentedPdfPage, TextCell
 from PIL import Image
 
 from docling.backend.abstract_backend import PaginatedDocumentBackend
+from docling.datamodel.backend_options import PdfBackendOptions
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.document import InputDocument
 
@@ -50,8 +51,14 @@ class PdfPageBackend(ABC):
 
 
 class PdfDocumentBackend(PaginatedDocumentBackend):
-    def __init__(self, in_doc: InputDocument, path_or_stream: Union[BytesIO, Path]):
-        super().__init__(in_doc, path_or_stream)
+    def __init__(
+        self,
+        in_doc: InputDocument,
+        path_or_stream: Union[BytesIO, Path],
+        options: PdfBackendOptions = PdfBackendOptions(),
+    ):
+        super().__init__(in_doc, path_or_stream, options)
+        self.options: PdfBackendOptions
 
         if self.input_format is not InputFormat.PDF:
             if self.input_format is InputFormat.IMAGE:
@@ -84,9 +91,9 @@ class PdfDocumentBackend(PaginatedDocumentBackend):
 
                 buf.seek(0)
                 self.path_or_stream = buf
-            else:
+            elif self.input_format not in self.supported_formats():
                 raise RuntimeError(
-                    f"Incompatible file format {self.input_format} was passed to a PdfDocumentBackend."
+                    f"Incompatible file format {self.input_format} was passed to a PdfDocumentBackend. Valid format are {','.join(self.supported_formats())}."
                 )
 
     @abstractmethod
@@ -99,7 +106,7 @@ class PdfDocumentBackend(PaginatedDocumentBackend):
 
     @classmethod
     def supported_formats(cls) -> Set[InputFormat]:
-        return {InputFormat.PDF}
+        return {InputFormat.PDF, InputFormat.IMAGE}
 
     @classmethod
     def supports_pagination(cls) -> bool:
